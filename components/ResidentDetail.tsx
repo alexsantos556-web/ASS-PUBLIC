@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Resident, VitalSigns, Evolution, Prescription, MedCheck, UserRole } from '../types';
-import { MOCK_RESIDENTS, CURRENT_USER } from '../constants';
+import { CURRENT_USER } from '../constants';
+import { storage } from '../services/storageService';
 import { 
   ArrowLeft, 
   Calendar, 
@@ -26,27 +27,17 @@ interface ResidentDetailProps {
 
 const ResidentDetail: React.FC<ResidentDetailProps> = ({ residentId, onBack, onLog }) => {
   const [activeTab, setActiveTab] = useState<'info' | 'clinical' | 'meds' | 'evolutions' | 'timeline'>('info');
-  const [resident, setResident] = useState<Resident | undefined>(MOCK_RESIDENTS.find(r => r.id === residentId));
-  const [evolutions, setEvolutions] = useState<Evolution[]>([]);
+  const [resident, setResident] = useState<Resident | undefined>(
+    () => storage.getResidents().find(r => r.id === residentId)
+  );
+  const [evolutions, setEvolutions] = useState<Evolution[]>(() => storage.getEvolutions(residentId));
   const [newEvolution, setNewEvolution] = useState('');
   const [insights, setInsights] = useState<string | null>(null);
   const [loadingInsights, setLoadingInsights] = useState(false);
 
   useEffect(() => {
-    // Simulated load of evolutions
-    setEvolutions([
-      {
-        id: 'e1',
-        residentId,
-        userId: 'u1',
-        userName: 'Ana Silva',
-        role: UserRole.RT_ENFERMEIRO,
-        text: 'Paciente estável, alimentando-se bem. Sono preservado.',
-        conduct: 'Manter cuidados gerais.',
-        carePlan: 'Banho de sol matinal.',
-        timestamp: new Date().toISOString()
-      }
-    ]);
+    setResident(storage.getResidents().find(r => r.id === residentId));
+    setEvolutions(storage.getEvolutions(residentId));
   }, [residentId]);
 
   const handleAddEvolution = () => {
@@ -62,7 +53,9 @@ const ResidentDetail: React.FC<ResidentDetailProps> = ({ residentId, onBack, onL
       carePlan: 'Seguir protocolo',
       timestamp: new Date().toISOString()
     };
-    setEvolutions([evo, ...evolutions]);
+    const updated = [evo, ...evolutions];
+    setEvolutions(updated);
+    storage.setEvolutions(residentId, updated);
     setNewEvolution('');
     onLog('Criação de Evolução', 'evolucao', `Evolução adicionada para ${resident?.name}`);
   };

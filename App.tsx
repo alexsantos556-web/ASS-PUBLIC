@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { User, Resident, AuditLog, UserRole } from './types';
-import { CURRENT_USER, MOCK_RESIDENTS } from './constants';
+import { CURRENT_USER } from './constants';
+import { storage } from './services/storageService';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import ResidentList from './components/ResidentList';
@@ -11,8 +12,11 @@ import AuditLogsView from './components/AuditLogs';
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<'dashboard' | 'residents' | 'resident-detail' | 'logs'>('dashboard');
   const [selectedResidentId, setSelectedResidentId] = useState<string | null>(null);
-  const [residents, setResidents] = useState<Resident[]>(MOCK_RESIDENTS);
-  const [logs, setLogs] = useState<AuditLog[]>([]);
+  const [residents, setResidents] = useState<Resident[]>(() => storage.getResidents());
+  const [logs, setLogs] = useState<AuditLog[]>(() => storage.getLogs());
+
+  useEffect(() => { storage.setResidents(residents); }, [residents]);
+  useEffect(() => { storage.setLogs(logs); }, [logs]);
 
   const addLog = (action: string, entity: string, details: string) => {
     const newLog: AuditLog = {

@@ -1,5 +1,5 @@
 
-import { UserRole, Resident, User } from './types';
+import { UserRole, Resident, User, Evolution } from './types';
 
 export const CURRENT_USER: User = {
   id: 'u1',
@@ -37,3 +37,32 @@ export const MOCK_RESIDENTS: Resident[] = [
     admissionDate: '2024-01-15'
   }
 ];
+
+export const MOCK_EVOLUTIONS: Record<string, Evolution[]> = {
+  r1: [
+    {
+      id: 'e1',
+      residentId: 'r1',
+      userId: 'u1',
+      userName: 'Ana Silva',
+      role: UserRole.RT_ENFERMEIRO,
+      text: 'Paciente estável, alimentando-se bem. Sono preservado.',
+      conduct: 'Manter cuidados gerais.',
+      carePlan: 'Banho de sol matinal.',
+      timestamp: '2026-06-10T08:00:00.000Z',
+    },
+  ],
+  r2: [
+    {
+      id: 'e2',
+      residentId: 'r2',
+      userId: 'u1',
+      userName: 'Ana Silva',
+      role: UserRole.RT_ENFERMEIRO,
+      text: 'Residente comunicativa, sem queixas. Hidratação adequada.',
+      conduct: 'Acompanhamento semanal de peso.',
+      carePlan: 'Estimulação cognitiva com atividades recreativas.',
+      timestamp: '2026-06-11T09:30:00.000Z',
+    },
+  ],
+};
